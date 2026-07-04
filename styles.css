@@ -444,12 +444,12 @@ img { max-width: 100%; display: block; }
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
 
-/* Clip-path wipe reveal for image-led tiles */
+/* Reveal for image-led tiles — opacity + rise + subtle scale (repaint-safe) */
 .reveal-wipe {
-  opacity: 0; clip-path: inset(0 0 100% 0);
-  transition: clip-path 1.05s var(--ease), opacity 1.05s var(--ease);
+  opacity: 0; transform: translateY(34px) scale(0.98);
+  transition: opacity 0.95s var(--ease), transform 0.95s var(--ease);
 }
-.reveal-wipe.in { opacity: 1; clip-path: inset(0 0 0 0); }
+.reveal-wipe.in { opacity: 1; transform: none; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 980px) {
@@ -480,7 +480,7 @@ img { max-width: 100%; display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal, .reveal-wipe { opacity: 1; transform: none; clip-path: none; transition: none; }
+  .reveal, .reveal-wipe { opacity: 1; transform: none; transition: none; }
   .hero__scroll span, .hero__bg { animation: none; }
   html { scroll-behavior: auto; }
 }
