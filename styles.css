@@ -80,6 +80,13 @@ img { max-width: 100%; display: block; }
 
 .btn--gold { background: var(--gold); color: var(--charcoal); border-color: var(--gold); }
 .btn--gold:hover { background: var(--gold-soft); border-color: var(--gold-soft); }
+/* light sweep across gold buttons on hover */
+.btn::before {
+  content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: skewX(-18deg); transition: left 0.7s var(--ease); pointer-events: none;
+}
+.btn:hover::before { left: 140%; }
 
 .btn--ghost { color: var(--ivory); border-color: rgba(247, 242, 233, 0.5); }
 .btn--ghost:hover { background: var(--ivory); color: var(--charcoal); border-color: var(--ivory); }
@@ -197,7 +204,7 @@ img { max-width: 100%; display: block; }
   transition: opacity 0.5s var(--ease);
 }
 .ph--hotel { aspect-ratio: 4/5; background: url('images/room-2.jpg') center/cover; }
-.ph--map   { aspect-ratio: 4/3; background: url('images/hotel-exterior.jpg') center/cover; }
+.ph--map   { aspect-ratio: 4/3; background: url('images/fac-7.jpg') center/cover; }
 
 .ph--room1 { background: url('images/room-6.jpg') center/cover; }
 .ph--room2 { background: url('images/room-7.jpg') center/cover; }
@@ -329,15 +336,34 @@ img { max-width: 100%; display: block; }
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
 }
 .facility {
-  padding: 2.6rem 2rem; border: 1px solid var(--line); background: var(--ivory);
-  transition: background 0.5s var(--ease), transform 0.5s var(--ease);
+  position: relative; overflow: hidden;
+  min-height: 300px; display: flex; align-items: flex-end;
+  background: var(--espresso); color: var(--ivory);
+  transition: transform 0.55s var(--ease), box-shadow 0.55s var(--ease);
 }
-.facility:hover { background: var(--espresso); transform: translateY(-6px); }
-.facility:hover h3, .facility:hover p { color: var(--ivory); }
-.facility:hover .facility__icon { color: var(--gold-soft); }
-.facility__icon { color: var(--gold); font-size: 1.4rem; margin-bottom: 1rem; transition: color 0.5s; }
-.facility h3 { font-size: 1.5rem; margin-bottom: 0.6rem; transition: color 0.5s; }
-.facility p { color: var(--text-soft); font-size: 0.95rem; transition: color 0.5s; }
+.facility:hover { transform: translateY(-6px); box-shadow: 0 26px 60px rgba(0,0,0,0.32); }
+
+/* Subtle ✦ watermark on the solid (photo-less) tiles */
+.facility:not(.facility--photo)::before {
+  content: "✦"; position: absolute; top: -0.4rem; right: 1rem;
+  font-size: 7rem; color: var(--gold); opacity: 0.08; line-height: 1;
+}
+
+.facility__media {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transform: scale(1.02); transition: transform 1.1s var(--ease);
+}
+.facility--photo::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(15,12,9,0.92) 8%, rgba(15,12,9,0.35) 55%, rgba(15,12,9,0.15) 100%);
+}
+.facility--photo:hover .facility__media { transform: scale(1.1); }
+
+.facility__content { position: relative; z-index: 1; padding: 2.4rem 2rem; }
+.facility__icon { color: var(--gold-soft); font-size: 1.4rem; margin-bottom: 0.9rem; }
+.facility h3 { font-size: 1.55rem; margin-bottom: 0.5rem; }
+.facility p { color: rgba(247,242,233,0.72); font-size: 0.95rem; }
 
 /* ---------- Amara Venue ---------- */
 .amara {
@@ -418,6 +444,13 @@ img { max-width: 100%; display: block; }
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
 
+/* Clip-path wipe reveal for image-led tiles */
+.reveal-wipe {
+  opacity: 0; clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.05s var(--ease), opacity 1.05s var(--ease);
+}
+.reveal-wipe.in { opacity: 1; clip-path: inset(0 0 0 0); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 980px) {
   .rooms, .facility-grid { grid-template-columns: repeat(2, 1fr); }
@@ -447,7 +480,7 @@ img { max-width: 100%; display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .hero__scroll span { animation: none; }
+  .reveal, .reveal-wipe { opacity: 1; transform: none; clip-path: none; transition: none; }
+  .hero__scroll span, .hero__bg { animation: none; }
   html { scroll-behavior: auto; }
 }
