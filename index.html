@@ -91,7 +91,7 @@
     </div>
 
     <div class="rooms">
-      <article class="room reveal">
+      <article class="room reveal" data-room="deluxe-king" tabindex="0" role="button" aria-label="View Deluxe King details">
         <div class="ph ph--room1"></div>
         <div class="room__body">
           <h3>Deluxe King</h3>
@@ -99,7 +99,7 @@
           <span class="room__meta">Terrace · 1 Guest</span>
         </div>
       </article>
-      <article class="room reveal">
+      <article class="room reveal" data-room="deluxe-twin" tabindex="0" role="button" aria-label="View Deluxe Twin details">
         <div class="ph ph--room2"></div>
         <div class="room__body">
           <h3>Deluxe Twin</h3>
@@ -107,7 +107,7 @@
           <span class="room__meta">Terrace · 2 Guests</span>
         </div>
       </article>
-      <article class="room reveal">
+      <article class="room reveal" data-room="one-bedroom" tabindex="0" role="button" aria-label="View One-Bedroom Studio details">
         <div class="ph ph--room3"></div>
         <div class="room__body">
           <h3>One-Bedroom Studio</h3>
@@ -115,7 +115,7 @@
           <span class="room__meta">Sea View · 2 Guests</span>
         </div>
       </article>
-      <article class="room reveal">
+      <article class="room reveal" data-room="two-bedroom" tabindex="0" role="button" aria-label="View Two-Bedroom Studio details">
         <div class="ph ph--room4"></div>
         <div class="room__body">
           <h3>Two-Bedroom Studio</h3>
@@ -123,7 +123,7 @@
           <span class="room__meta">Sea View · 4 Guests</span>
         </div>
       </article>
-      <article class="room reveal">
+      <article class="room reveal" data-room="family-suite" tabindex="0" role="button" aria-label="View Family Suite details">
         <div class="ph ph--room5"></div>
         <div class="room__body">
           <h3>Family Suite</h3>
@@ -131,7 +131,7 @@
           <span class="room__meta">Sea View · 5 Guests</span>
         </div>
       </article>
-      <article class="room reveal">
+      <article class="room reveal" data-room="panoramic-suite" tabindex="0" role="button" aria-label="View Panoramic Suite details">
         <div class="ph ph--room6"></div>
         <div class="room__body">
           <h3>Panoramic Suite</h3>
@@ -290,6 +290,24 @@
       </form>
     </div>
   </section>
+
+  <!-- ===== Room Detail Modal ===== -->
+  <div class="modal" id="roomModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="document">
+      <button class="modal__close" data-close aria-label="Close">&times;</button>
+      <div class="modal__media"><div class="modal__img" id="modalImg"></div></div>
+      <div class="modal__body">
+        <p class="eyebrow" id="modalView">Sea View</p>
+        <h3 id="modalTitle">Residence</h3>
+        <p class="modal__desc" id="modalDesc"></p>
+        <div class="modal__specs" id="modalSpecs"></div>
+        <h4 class="modal__amen-title">Amenities</h4>
+        <ul class="modal__amenities" id="modalAmenities"></ul>
+        <a href="#contact" class="btn btn--gold btn--full" data-close>Reserve This Residence</a>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== Footer ===== -->
   <footer class="footer">
