@@ -8,11 +8,26 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- ===== Preloader ===== -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__inner">
+      <span class="preloader__mark">LE&nbsp;PAVÉ</span>
+      <span class="preloader__sub">RESIDENCES</span>
+      <span class="preloader__bar"><span class="preloader__fill"></span></span>
+    </div>
+  </div>
+
+  <!-- ===== Ambient layers ===== -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <!-- ===== Navigation ===== -->
   <header class="nav" id="nav">
@@ -41,21 +56,37 @@
 
   <!-- ===== Hero ===== -->
   <section class="hero" id="home">
-    <div class="hero__bg"></div>
+    <div class="hero__bg" data-parallax="0.18"></div>
     <div class="hero__overlay"></div>
     <div class="hero__content">
-      <p class="hero__eyebrow reveal">Ain Aar · Mount Lebanon</p>
-      <h1 class="hero__title reveal">Modern luxury,<br /><em>naturally.</em></h1>
-      <p class="hero__lead reveal">Forty-five furnished residences perched between the mountains and the sea — ten minutes from Beirut, a world away from the ordinary.</p>
-      <div class="hero__actions reveal">
-        <a href="#contact" class="btn btn--gold">Reserve Your Stay</a>
-        <a href="#hotel" class="btn btn--ghost">Discover Le Pavé</a>
+      <p class="hero__eyebrow"><span class="hero__eyebrow-line"></span>Ain Aar · Mount Lebanon</p>
+      <h1 class="hero__title">
+        <span class="line"><span class="w">Modern</span> <span class="w">luxury,</span></span>
+        <span class="line"><span class="w"><em>naturally.</em></span></span>
+      </h1>
+      <p class="hero__lead">Forty-five furnished residences perched between the mountains and the sea — ten minutes from Beirut, a world away from the ordinary.</p>
+      <div class="hero__actions">
+        <a href="#contact" class="btn btn--gold" data-magnetic>Reserve Your Stay</a>
+        <a href="#hotel" class="btn btn--ghost" data-magnetic>Discover Le Pavé</a>
       </div>
     </div>
+    <div class="hero__meta">
+      <span>33.9°N · 35.6°E</span>
+      <span>Est. 2018</span>
+    </div>
     <a href="#hotel" class="hero__scroll" aria-label="Scroll down">
-      <span></span>
+      <span class="hero__scroll-label">Scroll</span>
+      <span class="hero__scroll-line"></span>
     </a>
   </section>
+
+  <!-- ===== Marquee ribbon ===== -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Seaside Views</span><i>✦</i><span>Mountain Air</span><i>✦</i><span>Wellness</span><i>✦</i><span>Fine Dining</span><i>✦</i><span>45 Residences</span><i>✦</i><span>10 Min from Beirut</span><i>✦</i>
+      <span>Seaside Views</span><i>✦</i><span>Mountain Air</span><i>✦</i><span>Wellness</span><i>✦</i><span>Fine Dining</span><i>✦</i><span>45 Residences</span><i>✦</i><span>10 Min from Beirut</span><i>✦</i>
+    </div>
+  </div>
 
   <!-- ===== The Hotel ===== -->
   <section class="section hotel" id="hotel">
@@ -68,7 +99,7 @@
         </div>
       </div>
       <div class="split__body">
-        <p class="eyebrow reveal">The Hotel</p>
+        <p class="eyebrow reveal"><span class="eyebrow__num">01</span>The Hotel</p>
         <h2 class="reveal">A sanctuary of comfort, crafted for the discerning traveller.</h2>
         <p class="reveal">Le Pavé Residences is a refined furnished-apartment concept set in the serene hills of Ain Aar. Each residence and suite opens onto a spacious private terrace with uninterrupted views over the mountains and Beirut's shimmering coastline.</p>
         <p class="reveal">Conceived as a true reflection of modern luxury with an eco-conscious spirit, Le Pavé blends architectural elegance with the calm of nature — a wellness-driven retreat where every detail is considered.</p>
@@ -85,7 +116,7 @@
   <!-- ===== Accommodation ===== -->
   <section class="section accommodation" id="accommodation">
     <div class="section__head">
-      <p class="eyebrow reveal">Accommodation</p>
+      <p class="eyebrow reveal"><span class="eyebrow__num">02</span>Accommodation</p>
       <h2 class="reveal">Residences designed to feel like home.</h2>
       <p class="section__intro reveal">Six thoughtfully appointed layouts, each with a generous terrace and panoramic outlook.</p>
     </div>
@@ -145,7 +176,7 @@
   <!-- ===== Facilities ===== -->
   <section class="section facilities" id="facilities">
     <div class="section__head">
-      <p class="eyebrow reveal">Facilities</p>
+      <p class="eyebrow reveal"><span class="eyebrow__num">03</span>Facilities</p>
       <h2 class="reveal">Everything for body and mind.</h2>
       <p class="section__intro reveal">A wellness atmosphere woven through every corner of the residence.</p>
     </div>
@@ -203,7 +234,7 @@
   <section class="section amara" id="amara">
     <div class="amara__inner">
       <div class="amara__body reveal">
-        <p class="eyebrow eyebrow--light">The Amara Venue</p>
+        <p class="eyebrow eyebrow--light"><span class="eyebrow__num">04</span>The Amara Venue</p>
         <h2>Where celebrations become unforgettable.</h2>
         <p>Amara is Le Pavé's signature event and dining venue — a versatile, light-filled space framed by nature and designed for weddings, gatherings and private occasions of every scale.</p>
         <a href="#contact" class="btn btn--gold">Enquire About Events</a>
@@ -214,7 +245,7 @@
   <!-- ===== Gallery ===== -->
   <section class="section gallery" id="gallery">
     <div class="section__head">
-      <p class="eyebrow reveal">Gallery</p>
+      <p class="eyebrow reveal"><span class="eyebrow__num">05</span>Gallery</p>
       <h2 class="reveal">A glimpse of Le Pavé.</h2>
     </div>
     <div class="gallery__grid">
@@ -231,7 +262,7 @@
   <section class="section location" id="location">
     <div class="split split--reverse">
       <div class="split__body">
-        <p class="eyebrow reveal">Location</p>
+        <p class="eyebrow reveal"><span class="eyebrow__num">06</span>Location</p>
         <h2 class="reveal">Ain Aar — the calm above Beirut.</h2>
         <p class="reveal">Nestled in the Metn highlands, Le Pavé sits just ten minutes from the energy of Beirut yet cradled by pine forests and cool mountain air. The perfect balance of connection and retreat.</p>
         <address class="address reveal">
@@ -250,7 +281,7 @@
   <section class="section contact" id="contact">
     <div class="contact__inner">
       <div class="contact__intro reveal">
-        <p class="eyebrow eyebrow--light">Reservations</p>
+        <p class="eyebrow eyebrow--light"><span class="eyebrow__num">07</span>Reservations</p>
         <h2>Begin your stay.</h2>
         <p>Share a few details and our team will craft your reservation with care.</p>
         <ul class="contact__details">

@@ -1,17 +1,48 @@
-/* Le Pavé Residences — interactions */
+/* Le Pavé Residences — interactions v2 */
 (function () {
   "use strict";
 
-  /* ---- Nav: solid background on scroll ---- */
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  /* ========================================================
+     Preloader → reveal hero
+     ======================================================== */
+  document.body.classList.add("loading");
+  var revealed = false;
+  function revealSite() {
+    if (revealed) return;
+    revealed = true;
+    document.body.classList.remove("loading");
+    document.body.classList.add("ready");
+    var pre = document.getElementById("preloader");
+    if (pre) pre.classList.add("done");
+  }
+  window.addEventListener("load", function () {
+    window.setTimeout(revealSite, reduceMotion ? 0 : 1250);
+  });
+  // hard fallback so the page can never stay behind the loader
+  window.setTimeout(revealSite, 4000);
+
+  /* ========================================================
+     Nav — solid on scroll + scroll progress
+     ======================================================== */
   var nav = document.getElementById("nav");
+  var progress = document.getElementById("scrollProgress");
   function onScroll() {
-    if (window.scrollY > 40) nav.classList.add("scrolled");
-    else nav.classList.remove("scrolled");
+    var y = window.scrollY;
+    if (y > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled");
+    if (progress) {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
+    }
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  /* ---- Mobile menu ---- */
+  /* ========================================================
+     Mobile menu
+     ======================================================== */
   var toggle = document.getElementById("navToggle");
   var links = document.getElementById("navLinks");
   toggle.addEventListener("click", function () {
@@ -27,45 +58,61 @@
     }
   });
 
-  /* ---- Scroll reveal (fade + clip-wipe) ---- */
+  /* ========================================================
+     Hero background parallax (background-position, no gaps)
+     ======================================================== */
+  var heroBg = document.querySelector(".hero__bg[data-parallax]");
+  if (heroBg && !reduceMotion) {
+    var factor = parseFloat(heroBg.getAttribute("data-parallax")) || 0.15;
+    var ticking = false;
+    function parallax() {
+      var offset = window.scrollY * factor;
+      heroBg.style.backgroundPosition = "center calc(50% + " + offset + "px)";
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { window.requestAnimationFrame(parallax); ticking = true; }
+    }, { passive: true });
+  }
+
+  /* ========================================================
+     Scroll reveal (fade + rise)
+     ======================================================== */
   var reveals = document.querySelectorAll(".reveal, .reveal-wipe");
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in");
-          io.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); }
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     reveals.forEach(function (el, i) {
-      // subtle stagger for grouped items
       el.style.transitionDelay = (i % 6) * 0.06 + "s";
       io.observe(el);
     });
-    // Safety net: never let content stay hidden if the observer misfires.
+    // safety net: never let content stay hidden
     window.setTimeout(function () {
       reveals.forEach(function (el) { el.classList.add("in"); });
-    }, 3000);
+    }, 3500);
   } else {
     reveals.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---- Count-up for stat numbers ---- */
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* ========================================================
+     Count-up for stat numbers
+     ======================================================== */
   var counters = document.querySelectorAll("[data-count]");
   function runCount(el) {
     var target = parseInt(el.getAttribute("data-count"), 10) || 0;
     if (reduceMotion) { el.textContent = target; return; }
-    var start = null, dur = 1400;
+    var start = null, dur = 1500;
     function step(ts) {
       if (start === null) start = ts;
       var p = Math.min((ts - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      var eased = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(eased * target);
-      if (p < 1) requestAnimationFrame(step);
+      if (p < 1) window.requestAnimationFrame(step);
     }
-    requestAnimationFrame(step);
+    window.requestAnimationFrame(step);
   }
   if ("IntersectionObserver" in window && counters.length) {
     var cio = new IntersectionObserver(function (entries) {
@@ -78,18 +125,60 @@
     counters.forEach(function (el) { el.textContent = el.getAttribute("data-count"); });
   }
 
-  /* =========================================================
-     Booking form — emails the reservation to the hotel.
+  /* ========================================================
+     Custom cursor (desktop, motion-friendly)
+     ======================================================== */
+  if (canHover && !reduceMotion) {
+    var cur = document.getElementById("cursor");
+    var dot = document.getElementById("cursorDot");
+    if (cur && dot) {
+      var mx = window.innerWidth / 2, my = window.innerHeight / 2;
+      var cx = mx, cy = my;
+      window.addEventListener("mousemove", function (e) {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + "px"; dot.style.top = my + "px";
+      });
+      (function loop() {
+        cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18;
+        // position via left/top so the .grow class can own `transform: scale`
+        cur.style.left = cx + "px"; cur.style.top = cy + "px";
+        window.requestAnimationFrame(loop);
+      })();
+      var interactive = "a, button, [data-magnetic], .room, [role='button'], input, select, textarea, label";
+      document.querySelectorAll(interactive).forEach(function (el) {
+        el.addEventListener("mouseenter", function () { cur.classList.add("grow"); });
+        el.addEventListener("mouseleave", function () { cur.classList.remove("grow"); });
+      });
+      document.addEventListener("mouseleave", function () { cur.style.opacity = "0"; dot.style.opacity = "0"; });
+      document.addEventListener("mouseenter", function () { cur.style.opacity = "1"; dot.style.opacity = "1"; });
+    }
+  }
+
+  /* ========================================================
+     Magnetic buttons
+     ======================================================== */
+  if (canHover && !reduceMotion) {
+    document.querySelectorAll("[data-magnetic]").forEach(function (el) {
+      var strength = 0.35;
+      el.addEventListener("mousemove", function (e) {
+        var r = el.getBoundingClientRect();
+        var x = (e.clientX - r.left - r.width / 2) * strength;
+        var y = (e.clientY - r.top - r.height / 2) * strength;
+        el.style.transform = "translate(" + x + "px," + y + "px)";
+      });
+      el.addEventListener("mouseleave", function () { el.style.transform = ""; });
+    });
+  }
+
+  /* ========================================================
+     Booking form — emails the reservation to the hotel
      -------------------------------------------------------
      RECOMMENDED: create a free form at https://formspree.io
      (sign up with the hotel's reservations inbox), then paste
-     your endpoint below, e.g.
-       FORMSPREE_ENDPOINT = "https://formspree.io/f/abcxyz";
-     Until that is set, the form falls back to opening the
-     guest's email app addressed to RESERVATIONS_EMAIL.
-     ========================================================= */
-  var FORMSPREE_ENDPOINT = "";                      // <-- paste Formspree endpoint here
-  var RESERVATIONS_EMAIL = "info@lepaveresidences.com"; // <-- confirm the hotel's inbox
+     your endpoint below. Until set, it opens the guest's mail app.
+     ======================================================== */
+  var FORMSPREE_ENDPOINT = "";
+  var RESERVATIONS_EMAIL = "info@lepaveresidences.com";
 
   var form = document.getElementById("bookingForm");
   var note = document.getElementById("formNote");
@@ -100,7 +189,6 @@
     submitBtn.textContent = "Reservation Requested";
     submitBtn.disabled = true;
   }
-
   function buildMailto(data) {
     var subject = "Reservation Request — " + (data.name || "Guest");
     var lines = [
@@ -117,41 +205,27 @@
       "?subject=" + encodeURIComponent(subject) +
       "&body=" + encodeURIComponent(lines.join("\n"));
   }
-
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!form.checkValidity()) { form.reportValidity(); return; }
-
     var data = Object.fromEntries(new FormData(form).entries());
-
     if (FORMSPREE_ENDPOINT) {
-      submitBtn.textContent = "Sending…";
-      submitBtn.disabled = true;
-      fetch(FORMSPREE_ENDPOINT, {
-        method: "POST",
-        headers: { "Accept": "application/json" },
-        body: new FormData(form)
-      }).then(function (res) {
-        if (res.ok) { showSuccess(); form.reset(); submitBtn.disabled = true; }
-        else { throw new Error("send failed"); }
-      }).catch(function () {
-        // fall back to the guest's mail client
-        window.location.href = buildMailto(data);
-        showSuccess();
-      });
+      submitBtn.textContent = "Sending…"; submitBtn.disabled = true;
+      fetch(FORMSPREE_ENDPOINT, { method: "POST", headers: { "Accept": "application/json" }, body: new FormData(form) })
+        .then(function (res) { if (res.ok) { showSuccess(); form.reset(); submitBtn.disabled = true; } else { throw new Error("send failed"); } })
+        .catch(function () { window.location.href = buildMailto(data); showSuccess(); });
     } else {
-      // No backend configured yet — hand off to the guest's email app
       window.location.href = buildMailto(data);
       showSuccess();
     }
   });
 
-  /* =========================================================
+  /* ========================================================
      Accommodation — hover quick-peek + click-to-open modal
      -------------------------------------------------------
-     NOTE: bed counts and sizes below are sensible PLACEHOLDERS.
-     Replace with Le Pavé's real figures when available.
-     ========================================================= */
+     NOTE: bed counts and sizes are PLACEHOLDERS — replace with
+     Le Pavé's real figures when available.
+     ======================================================== */
   var ROOMS = {
     "deluxe-king": {
       title: "Deluxe King", view: "Urban View", img: "images/room-6.jpg",
@@ -208,19 +282,15 @@
     mTitle.textContent = r.title;
     mDesc.textContent = r.desc;
     mSpecs.innerHTML = Object.keys(r.specs).map(function (k) {
-      return '<div class="spec"><span class="spec__k">' + k +
-             '</span><span class="spec__v">' + r.specs[k] + '</span></div>';
+      return '<div class="spec"><span class="spec__k">' + k + '</span><span class="spec__v">' + r.specs[k] + '</span></div>';
     }).join("");
-    mAmen.innerHTML = r.amenities.map(function (a) {
-      return "<li>" + a + "</li>";
-    }).join("");
+    mAmen.innerHTML = r.amenities.map(function (a) { return "<li>" + a + "</li>"; }).join("");
     lastFocused = document.activeElement;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     modal.querySelector(".modal__close").focus();
   }
-
   function closeModal() {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
@@ -231,8 +301,6 @@
   document.querySelectorAll(".room[data-room]").forEach(function (card) {
     var key = card.getAttribute("data-room");
     var r = ROOMS[key];
-
-    // Inject the hover quick-peek strip over the image
     if (r) {
       var ph = card.querySelector(".ph");
       var quick = document.createElement("div");
@@ -246,19 +314,14 @@
         '<span class="room__quick-cta">View Details +</span>';
       ph.appendChild(quick);
     }
-
     card.addEventListener("click", function () { openModal(key); });
     card.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(key); }
     });
   });
 
-  modal.addEventListener("click", function (e) {
-    if (e.target.hasAttribute("data-close")) closeModal();
-  });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
-  });
+  modal.addEventListener("click", function (e) { if (e.target.hasAttribute("data-close")) closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
 
   /* ---- Footer year ---- */
   var y = document.getElementById("year");
